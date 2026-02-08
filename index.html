@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Workout Tracker</title>
     
-    <!-- iOS Home Screen Icon -->
-    <link rel="apple-touch-icon" href="data:image/png;base64,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">
+    
+    <!-- iOS Home Screen Icons -->
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
     
     <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Workout Tracker">
-    
-    <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>💪</text></svg>">
+    <meta name="apple-mobile-web-app-title" content="Workout">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
