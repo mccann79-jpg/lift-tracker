@@ -152,6 +152,76 @@
             color: #333;
         }
 
+        .edit-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .entry-list {
+            margin-top: 10px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .entry-list.expanded {
+            max-height: 500px;
+        }
+
+        .entry-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: #f8f9fa;
+            margin-bottom: 5px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .entry-info {
+            flex: 1;
+        }
+
+        .entry-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .edit-entry-btn, .delete-entry-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .edit-entry-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .delete-entry-btn {
+            background: #dc3545;
+            color: white;
+        }
+
         .exercise-info {
             font-size: 12px;
             color: #666;
@@ -223,6 +293,170 @@
         input[type="file"] {
             padding: 8px;
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .import-options {
+            display: grid;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .radio-option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .radio-option input[type="radio"] {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .radio-option label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: normal;
+        }
+
+        .option-description {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .todays-workout-header {
+            background: #667eea;
+            color: white;
+            padding: 12px 16px;
+            font-weight: 600;
+            margin: 20px 0 10px 0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .today-entry-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .today-entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .today-exercise-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .today-exercise-details {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .today-stats {
+            font-size: 18px;
+            font-weight: 600;
+            color: #667eea;
+            margin: 8px 0;
+        }
+
+        .exercise-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            margin-bottom: 8px;
+            border-radius: 8px;
+        }
+
+        .exercise-list-info {
+            flex: 1;
+        }
+
+        .exercise-list-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .exercise-list-details {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .delete-exercise-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -232,6 +466,7 @@
         <div class="nav">
             <button class="nav-btn active" onclick="showPage('log')">Log</button>
             <button class="nav-btn" onclick="showPage('progress')">Progress</button>
+            <button class="nav-btn" onclick="showPage('exercises')">Exercises</button>
             <button class="nav-btn" onclick="showPage('data')">Data</button>
         </div>
     </div>
@@ -245,7 +480,8 @@
             <form id="workout-form">
                 <div class="form-group">
                     <label>Exercise</label>
-                    <select id="exercise-select" required>
+                    <input type="text" id="exercise-search" placeholder="Type to search exercises..." style="margin-bottom: 10px;">
+                    <select id="exercise-select" required size="5" style="height: auto;">
                         <option value="">Select an exercise...</option>
                     </select>
                 </div>
@@ -278,6 +514,9 @@
                 </div>
             </form>
         </div>
+
+        <!-- Today's Workouts -->
+        <div id="todays-workouts-container"></div>
     </div>
 
     <!-- PROGRESS PAGE -->
@@ -293,6 +532,51 @@
         <div id="progress-container"></div>
     </div>
 
+    <!-- EXERCISES PAGE -->
+    <div id="exercises-page" class="page">
+        <div class="form-card">
+            <h2 style="margin-bottom: 15px;">Add Custom Exercise</h2>
+            <form id="add-exercise-form">
+                <div class="form-group">
+                    <label>Muscle Group</label>
+                    <select id="new-muscle-group" required>
+                        <option value="">Select muscle group...</option>
+                        <option value="QUADS">QUADS</option>
+                        <option value="HAMSTRINGS">HAMSTRINGS</option>
+                        <option value="GLUTES">GLUTES</option>
+                        <option value="CHEST">CHEST</option>
+                        <option value="BACK">BACK</option>
+                        <option value="SHOULDERS">SHOULDERS</option>
+                        <option value="BICEPS">BICEPS</option>
+                        <option value="TRICEPS">TRICEPS</option>
+                        <option value="CALVES">CALVES</option>
+                        <option value="TRAPS">TRAPS</option>
+                        <option value="ABS">ABS</option>
+                        <option value="FOREARMS">FOREARMS</option>
+                        <option value="NECK">NECK</option>
+                        <option value="CARDIO">CARDIO</option>
+                        <option value="OTHER">OTHER</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Exercise Name</label>
+                    <input type="text" id="new-exercise-name" required placeholder="e.g., Bulgarian Split Squat">
+                </div>
+                <div class="form-group">
+                    <label>Equipment Type</label>
+                    <input type="text" id="new-equipment-type" required placeholder="e.g., Dumbbells, Machine, Barbell">
+                </div>
+                <button type="submit" class="btn">Add Exercise</button>
+            </form>
+        </div>
+
+        <div class="form-card">
+            <h2 style="margin-bottom: 15px;">All Exercises</h2>
+            <input type="text" id="exercise-list-search" placeholder="Search exercises..." style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; margin-bottom: 15px;">
+            <div id="exercises-list-container"></div>
+        </div>
+    </div>
+
     <!-- DATA PAGE -->
     <div id="data-page" class="page">
         <div class="form-card">
@@ -302,14 +586,74 @@
             
             <div style="margin: 20px 0; text-align: center; color: #999;">— or —</div>
             
-            <label class="btn btn-secondary" style="display: block; text-align: center;">
-                Import from CSV
-                <input type="file" id="import-file" accept=".csv" style="display: none;" onchange="importData()">
-            </label>
+            <button onclick="showImportModal()" class="btn btn-secondary">Import from CSV</button>
 
             <div style="margin-top: 30px;">
                 <button onclick="clearAllData()" class="btn btn-secondary">Clear All Data</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Edit Entry Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Entry</h3>
+                <button class="close-btn" onclick="closeEditModal()">&times;</button>
+            </div>
+            <form id="edit-form">
+                <input type="hidden" id="edit-entry-id">
+                <div class="form-group">
+                    <label>Exercise</label>
+                    <input type="text" id="edit-exercise-name" disabled style="background: #f0f0f0;">
+                </div>
+                <div class="input-row">
+                    <div class="form-group">
+                        <label>Weight (lbs)</label>
+                        <input type="number" id="edit-weight" step="0.5" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Max Reps</label>
+                        <input type="number" id="edit-reps" min="1" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="edit-date" required>
+                </div>
+                <button type="submit" class="btn">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div id="import-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Import CSV Data</h3>
+                <button class="close-btn" onclick="closeImportModal()">&times;</button>
+            </div>
+            
+            <div class="import-options">
+                <div class="radio-option">
+                    <input type="radio" id="import-add" name="import-mode" value="add" checked>
+                    <div>
+                        <label for="import-add">Add to existing data</label>
+                        <div class="option-description">Keep current entries and add new ones from CSV</div>
+                    </div>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="import-replace" name="import-mode" value="replace">
+                    <div>
+                        <label for="import-replace">Replace all data</label>
+                        <div class="option-description">Delete all current entries and import only CSV data</div>
+                    </div>
+                </div>
+            </div>
+
+            <input type="file" id="import-file" accept=".csv" style="margin: 15px 0;">
+            
+            <button onclick="executeImport()" class="btn">Import</button>
         </div>
     </div>
 
@@ -335,7 +679,7 @@
             console.error("Firebase initialization error:", error);
         }
 
-        const exercises = [
+        const defaultExercises = [
             {muscle: "QUADS", name: "Squat", equipment: "Barbell"},
             {muscle: "QUADS", name: "Squat (lighter)", equipment: "Barbell"},
             {muscle: "QUADS", name: "Leg Press", equipment: "Machine"},
@@ -368,6 +712,7 @@
             {muscle: "NECK", name: "Neck Curls/Extensions", equipment: "Plate/Harness"}
         ];
 
+        let exercises = [...defaultExercises];
         let workoutData = [];
 
         // Initialize
@@ -375,8 +720,99 @@
             populateExerciseDropdown();
             populateMuscleFilter();
             setTodayDate();
+            await loadCustomExercises();
             await loadData();
             renderProgress();
+            renderTodaysWorkouts();
+            renderExercisesList();
+        }
+
+        async function loadCustomExercises() {
+            if (!db) return;
+            
+            try {
+                const snapshot = await db.collection('customExercises').get();
+                const customExercises = [];
+                snapshot.forEach(doc => {
+                    customExercises.push({ id: doc.id, ...doc.data() });
+                });
+                
+                exercises = [...defaultExercises, ...customExercises];
+                populateExerciseDropdown();
+                console.log(`Loaded ${customExercises.length} custom exercises`);
+            } catch (error) {
+                console.error('Error loading custom exercises:', error);
+            }
+        }
+
+        async function saveCustomExercise(exercise) {
+            if (!db) {
+                alert('Database connection error.');
+                return false;
+            }
+            
+            try {
+                await db.collection('customExercises').add(exercise);
+                return true;
+            } catch (error) {
+                console.error('Error saving custom exercise:', error);
+                alert('Error saving exercise. Please try again.');
+                return false;
+            }
+        }
+
+        async function deleteCustomExercise(id) {
+            if (!db) {
+                alert('Database connection error.');
+                return false;
+            }
+            
+            try {
+                await db.collection('customExercises').doc(id).delete();
+                return true;
+            } catch (error) {
+                console.error('Error deleting custom exercise:', error);
+                alert('Error deleting exercise. Please try again.');
+                return false;
+            }
+        }
+
+        function renderTodaysWorkouts() {
+            const container = document.getElementById('todays-workouts-container');
+            const today = new Date().toISOString().split('T')[0];
+            
+            const todaysWorkouts = workoutData.filter(d => d.date === today);
+            
+            if (todaysWorkouts.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '<div class="todays-workout-header">📅 Today\'s Workouts</div>';
+            
+            todaysWorkouts.forEach(entry => {
+                html += `
+                    <div class="today-entry-item">
+                        <div class="today-entry-header">
+                            <div>
+                                <div class="today-exercise-name">${entry.exercise}</div>
+                                <div class="today-exercise-details">
+                                    <span class="equipment-tag">${entry.equipment}</span>
+                                </div>
+                            </div>
+                            <div class="entry-actions">
+                                <button class="edit-entry-btn" onclick='editEntry(${JSON.stringify(entry)})'>Edit</button>
+                                <button class="delete-entry-btn" onclick='deleteEntry("${entry.id}")'>Delete</button>
+                            </div>
+                        </div>
+                        <div class="today-stats">
+                            ${entry.weight} lbs × ${entry.reps} reps
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
         }
 
         async function loadData() {
@@ -417,6 +853,7 @@
 
         function populateExerciseDropdown() {
             const select = document.getElementById('exercise-select');
+            select.innerHTML = '<option value="">Select an exercise...</option>';
             exercises.forEach((ex, idx) => {
                 const option = document.createElement('option');
                 option.value = idx;
@@ -424,6 +861,124 @@
                 select.appendChild(option);
             });
         }
+
+        // Exercise search functionality
+        document.getElementById('exercise-search').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const select = document.getElementById('exercise-select');
+            const options = select.querySelectorAll('option');
+            
+            options.forEach(option => {
+                if (option.value === '') {
+                    option.style.display = 'block';
+                    return;
+                }
+                
+                const text = option.textContent.toLowerCase();
+                option.style.display = text.includes(searchTerm) ? 'block' : 'none';
+            });
+        });
+
+        // Add custom exercise form
+        document.getElementById('add-exercise-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const muscle = document.getElementById('new-muscle-group').value;
+            const name = document.getElementById('new-exercise-name').value.trim();
+            const equipment = document.getElementById('new-equipment-type').value.trim();
+            
+            // Check if exercise already exists
+            const exists = exercises.some(ex => 
+                ex.name.toLowerCase() === name.toLowerCase() && 
+                ex.equipment.toLowerCase() === equipment.toLowerCase()
+            );
+            
+            if (exists) {
+                alert('This exercise already exists!');
+                return;
+            }
+            
+            const newExercise = {
+                muscle: muscle,
+                name: name,
+                equipment: equipment
+            };
+            
+            const saved = await saveCustomExercise(newExercise);
+            if (saved) {
+                await loadCustomExercises();
+                renderExercisesList();
+                
+                // Reset form
+                this.reset();
+                alert('Exercise added successfully!');
+            }
+        });
+
+        // Render exercises list
+        function renderExercisesList() {
+            const container = document.getElementById('exercises-list-container');
+            const searchTerm = document.getElementById('exercise-list-search').value.toLowerCase();
+            
+            let html = '';
+            let currentMuscle = '';
+            
+            const sortedExercises = [...exercises].sort((a, b) => {
+                if (a.muscle !== b.muscle) return a.muscle.localeCompare(b.muscle);
+                return a.name.localeCompare(b.name);
+            });
+            
+            sortedExercises.forEach(ex => {
+                // Filter by search
+                const matchesSearch = !searchTerm || 
+                    ex.name.toLowerCase().includes(searchTerm) ||
+                    ex.equipment.toLowerCase().includes(searchTerm) ||
+                    ex.muscle.toLowerCase().includes(searchTerm);
+                
+                if (!matchesSearch) return;
+                
+                // Add muscle group header
+                if (currentMuscle !== ex.muscle) {
+                    currentMuscle = ex.muscle;
+                    html += `<div class="muscle-group" style="margin-top: 15px;">${ex.muscle}</div>`;
+                }
+                
+                const isCustom = !defaultExercises.some(def => 
+                    def.name === ex.name && def.equipment === ex.equipment
+                );
+                
+                html += `
+                    <div class="exercise-list-item">
+                        <div class="exercise-list-info">
+                            <div class="exercise-list-name">${ex.name}</div>
+                            <div class="exercise-list-details">
+                                <span class="equipment-tag">${ex.equipment}</span>
+                                ${isCustom ? '<span class="equipment-tag" style="background: #667eea; color: white; margin-left: 5px;">Custom</span>' : ''}
+                            </div>
+                        </div>
+                        ${isCustom && ex.id ? `<button class="delete-exercise-btn" onclick="removeExercise('${ex.id}')">Delete</button>` : ''}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html || '<div class="no-data">No exercises found</div>';
+        }
+
+        async function removeExercise(id) {
+            if (!confirm('Delete this custom exercise? This will not delete your workout history.')) {
+                return;
+            }
+            
+            const deleted = await deleteCustomExercise(id);
+            if (deleted) {
+                await loadCustomExercises();
+                renderExercisesList();
+                alert('Exercise deleted successfully!');
+            }
+        }
+
+        // Exercise list search
+        document.getElementById('exercise-list-search').addEventListener('input', renderExercisesList);
 
         function populateMuscleFilter() {
             const select = document.getElementById('muscle-filter');
@@ -511,6 +1066,7 @@
             document.getElementById('exercise-select').dispatchEvent(new Event('change'));
 
             renderProgress();
+            renderTodaysWorkouts();
         });
 
         function showPage(page) {
@@ -562,16 +1118,31 @@
 
                 const sorted = exerciseData.sort((a, b) => new Date(a.date) - new Date(b.date));
                 const latest = sorted[sorted.length - 1];
+                const cardId = `card-${exercise.name}-${exercise.equipment}`.replace(/[^a-zA-Z0-9-]/g, '-');
 
                 card.innerHTML = `
                     <div class="exercise-header">
                         <div class="exercise-name">${exercise.name}</div>
+                        <button class="edit-btn" onclick="toggleEntries('${cardId}')">View All (${exerciseData.length})</button>
                     </div>
                     <div class="exercise-info">
                         <span class="equipment-tag">${exercise.equipment}</span>
                     </div>
                     <div class="last-entry">
                         Latest: ${latest.weight} lbs × ${latest.reps} reps (${formatDate(latest.date)})
+                    </div>
+                    <div id="${cardId}" class="entry-list">
+                        ${sorted.reverse().map(entry => `
+                            <div class="entry-item">
+                                <div class="entry-info">
+                                    <strong>${entry.weight} lbs × ${entry.reps} reps</strong> - ${formatDate(entry.date)}
+                                </div>
+                                <div class="entry-actions">
+                                    <button class="edit-entry-btn" onclick='editEntry(${JSON.stringify(entry)})'>Edit</button>
+                                    <button class="delete-entry-btn" onclick='deleteEntry("${entry.id}")'>Delete</button>
+                                </div>
+                            </div>
+                        `).join('')}
                     </div>
                     <div class="chart-container">
                         <canvas id="chart-${exercise.name}-${exercise.equipment}"></canvas>
@@ -585,7 +1156,7 @@
                 new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: sorted.map(d => formatDate(d.date)),
+                        labels: sorted.reverse().map(d => formatDate(d.date)),
                         datasets: [{
                             label: 'Weight (lbs)',
                             data: sorted.map(d => d.weight),
@@ -618,9 +1189,90 @@
             });
         }
 
+        function toggleEntries(cardId) {
+            const entryList = document.getElementById(cardId);
+            entryList.classList.toggle('expanded');
+        }
+
         function formatDate(dateStr) {
             const date = new Date(dateStr);
             return (date.getMonth() + 1) + '/' + date.getDate();
+        }
+
+        function editEntry(entry) {
+            document.getElementById('edit-entry-id').value = entry.id;
+            document.getElementById('edit-exercise-name').value = `${entry.exercise} (${entry.equipment})`;
+            document.getElementById('edit-weight').value = entry.weight;
+            document.getElementById('edit-reps').value = entry.reps;
+            document.getElementById('edit-date').value = entry.date;
+            document.getElementById('edit-modal').classList.add('active');
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.remove('active');
+        }
+
+        document.getElementById('edit-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('edit-entry-id').value;
+            const weight = parseFloat(document.getElementById('edit-weight').value);
+            const reps = parseInt(document.getElementById('edit-reps').value);
+            const date = document.getElementById('edit-date').value;
+
+            if (!db) {
+                alert('Database connection error.');
+                return;
+            }
+
+            try {
+                await db.collection('workouts').doc(id).update({
+                    weight: weight,
+                    reps: reps,
+                    date: date
+                });
+
+                // Update local data
+                const entry = workoutData.find(e => e.id === id);
+                if (entry) {
+                    entry.weight = weight;
+                    entry.reps = reps;
+                    entry.date = date;
+                }
+
+                closeEditModal();
+                renderProgress();
+                renderTodaysWorkouts();
+                
+                // Show success
+                alert('Entry updated successfully!');
+            } catch (error) {
+                console.error('Error updating entry:', error);
+                alert('Error updating entry. Please try again.');
+            }
+        });
+
+        async function deleteEntry(id) {
+            if (!confirm('Delete this entry?')) return;
+
+            if (!db) {
+                alert('Database connection error.');
+                return;
+            }
+
+            try {
+                await db.collection('workouts').doc(id).delete();
+                
+                // Remove from local data
+                workoutData = workoutData.filter(e => e.id !== id);
+                
+                renderProgress();
+                renderTodaysWorkouts();
+                alert('Entry deleted successfully!');
+            } catch (error) {
+                console.error('Error deleting entry:', error);
+                alert('Error deleting entry. Please try again.');
+            }
         }
 
         document.getElementById('muscle-filter').addEventListener('change', renderProgress);
@@ -644,9 +1296,23 @@
             a.click();
         }
 
-        function importData() {
+        function showImportModal() {
+            document.getElementById('import-modal').classList.add('active');
+        }
+
+        function closeImportModal() {
+            document.getElementById('import-modal').classList.remove('active');
+            document.getElementById('import-file').value = '';
+        }
+
+        async function executeImport() {
             const file = document.getElementById('import-file').files[0];
-            if (!file) return;
+            if (!file) {
+                alert('Please select a CSV file to import.');
+                return;
+            }
+
+            const mode = document.querySelector('input[name="import-mode"]:checked').value;
 
             const reader = new FileReader();
             reader.onload = async function(e) {
@@ -669,7 +1335,16 @@
                     }
                 });
 
-                if (!confirm(`Import ${imported.length} entries? This will add to existing data.`)) {
+                if (imported.length === 0) {
+                    alert('No valid data found in CSV file.');
+                    return;
+                }
+
+                const confirmMsg = mode === 'replace' 
+                    ? `Replace ALL existing data with ${imported.length} new entries? This will DELETE all current workouts!`
+                    : `Import ${imported.length} entries and add to existing data?`;
+
+                if (!confirm(confirmMsg)) {
                     return;
                 }
                 
@@ -680,15 +1355,31 @@
                 
                 try {
                     const batch = db.batch();
+                    
+                    // If replace mode, delete all existing data first
+                    if (mode === 'replace') {
+                        const snapshot = await db.collection('workouts').get();
+                        snapshot.docs.forEach(doc => {
+                            batch.delete(doc.ref);
+                        });
+                    }
+                    
+                    // Add imported data
                     imported.forEach(entry => {
                         const docRef = db.collection('workouts').doc();
                         batch.set(docRef, entry);
                     });
+                    
                     await batch.commit();
                     
                     await loadData();
-                    alert('Data imported successfully!');
+                    closeImportModal();
                     renderProgress();
+                    
+                    const successMsg = mode === 'replace'
+                        ? 'All data replaced successfully!'
+                        : 'Data imported successfully!';
+                    alert(successMsg);
                 } catch (error) {
                     console.error('Error importing:', error);
                     alert('Error importing data. Please try again.');
