@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Workout Tracker</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -309,6 +314,25 @@
     </div>
 
     <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        let db;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+        }
+
         const exercises = [
             {muscle: "QUADS", name: "Squat", equipment: "Barbell"},
             {muscle: "QUADS", name: "Squat (lighter)", equipment: "Barbell"},
@@ -354,23 +378,38 @@
         }
 
         async function loadData() {
+            if (!db) {
+                console.error('Firebase not initialized');
+                return;
+            }
+            
             try {
-                const result = await window.storage.get('workout-data', true);
-                if (result && result.value) {
-                    workoutData = JSON.parse(result.value);
-                }
+                const snapshot = await db.collection('workouts').orderBy('timestamp', 'asc').get();
+                workoutData = [];
+                snapshot.forEach(doc => {
+                    workoutData.push({ id: doc.id, ...doc.data() });
+                });
+                console.log(`Loaded ${workoutData.length} workout entries`);
             } catch (error) {
-                console.log('No existing data or error loading:', error);
+                console.error('Error loading data:', error);
                 workoutData = [];
             }
         }
 
-        async function saveData() {
+        async function saveData(entry) {
+            if (!db) {
+                console.error('Firebase not initialized');
+                alert('Database connection error. Please check your Firebase configuration.');
+                return false;
+            }
+            
             try {
-                await window.storage.set('workout-data', JSON.stringify(workoutData), true);
+                await db.collection('workouts').add(entry);
+                return true;
             } catch (error) {
                 console.error('Error saving data:', error);
                 alert('Error saving data. Please try again.');
+                return false;
             }
         }
 
@@ -446,11 +485,14 @@
                 weight: weight,
                 reps: reps,
                 date: date,
-                timestamp: new Date().getTime()
+                timestamp: firebase.firestore.Timestamp.now()
             };
 
+            const saved = await saveData(entry);
+            if (!saved) return;
+
+            // Add to local array
             workoutData.push(entry);
-            await saveData();
 
             // Show success message
             const msg = document.getElementById('success-msg');
@@ -462,6 +504,9 @@
             document.getElementById('weight-input').value = '';
             document.getElementById('reps-input').value = '';
             setTodayDate();
+
+            // Update the last workout display
+            document.getElementById('exercise-select').dispatchEvent(new Event('change'));
 
             renderProgress();
         });
@@ -617,27 +662,63 @@
                             weight: parseFloat(weight),
                             reps: parseInt(reps),
                             date: date.trim(),
-                            timestamp: new Date().getTime()
+                            timestamp: firebase.firestore.Timestamp.now()
                         });
                     }
                 });
 
-                if (confirm(`Import ${imported.length} entries? This will add to existing data.`)) {
-                    workoutData.push(...imported);
-                    await saveData();
+                if (!confirm(`Import ${imported.length} entries? This will add to existing data.`)) {
+                    return;
+                }
+                
+                if (!db) {
+                    alert('Database connection error.');
+                    return;
+                }
+                
+                try {
+                    const batch = db.batch();
+                    imported.forEach(entry => {
+                        const docRef = db.collection('workouts').doc();
+                        batch.set(docRef, entry);
+                    });
+                    await batch.commit();
+                    
+                    await loadData();
                     alert('Data imported successfully!');
                     renderProgress();
+                } catch (error) {
+                    console.error('Error importing:', error);
+                    alert('Error importing data. Please try again.');
                 }
             };
             reader.readAsText(file);
         }
 
         async function clearAllData() {
-            if (confirm('Are you sure you want to delete ALL workout data? This cannot be undone!')) {
+            if (!confirm('Are you sure you want to delete ALL workout data? This cannot be undone!')) {
+                return;
+            }
+            
+            if (!db) {
+                alert('Database connection error.');
+                return;
+            }
+            
+            try {
+                const batch = db.batch();
+                const snapshot = await db.collection('workouts').get();
+                snapshot.docs.forEach(doc => {
+                    batch.delete(doc.ref);
+                });
+                await batch.commit();
+                
                 workoutData = [];
-                await saveData();
                 alert('All data cleared.');
                 renderProgress();
+            } catch (error) {
+                console.error('Error clearing data:', error);
+                alert('Error clearing data. Please try again.');
             }
         }
 
