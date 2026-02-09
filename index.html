@@ -469,6 +469,77 @@
             font-size: 12px;
             cursor: pointer;
         }
+
+        .goal-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .goal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .progression-table {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 10px 8px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .week-complete {
+            background: #d4edda !important;
+        }
+
+        .goal-summary {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .goal-stat {
+            display: inline-block;
+            margin-right: 20px;
+            font-size: 14px;
+        }
+
+        .goal-stat strong {
+            color: #667eea;
+        }
     </style>
 </head>
 <body>
@@ -478,6 +549,7 @@
         <div class="nav">
             <button class="nav-btn active" onclick="showPage('log')">Log</button>
             <button class="nav-btn" onclick="showPage('progress')">Progress</button>
+            <button class="nav-btn" onclick="showPage('goals')">Goals</button>
             <button class="nav-btn" onclick="showPage('exercises')">Exercises</button>
             <button class="nav-btn" onclick="showPage('data')">Data</button>
         </div>
@@ -542,6 +614,33 @@
             </div>
         </div>
         <div id="progress-container"></div>
+    </div>
+
+    <!-- GOALS PAGE -->
+    <div id="goals-page" class="page">
+        <div class="form-card">
+            <h2 style="margin-bottom: 15px;">Set Exercise Goal</h2>
+            <form id="goal-form">
+                <div class="form-group">
+                    <label>Exercise</label>
+                    <select id="goal-exercise-select" required>
+                        <option value="">Select an exercise...</option>
+                    </select>
+                </div>
+                
+                <div id="goal-current-info" style="display: none;" class="last-entry" style="margin-bottom: 15px;">
+                </div>
+                
+                <div class="form-group">
+                    <label>Target Weight (lbs)</label>
+                    <input type="number" id="goal-target-weight" step="0.5" required>
+                </div>
+                
+                <button type="submit" class="btn">Generate Progression Plan</button>
+            </form>
+        </div>
+
+        <div id="goals-list-container"></div>
     </div>
 
     <!-- EXERCISES PAGE -->
@@ -726,18 +825,104 @@
 
         let exercises = [...defaultExercises];
         let workoutData = [];
+        let goalsData = [];
 
         // Initialize
         async function init() {
             populateExerciseDropdown();
+            populateGoalExerciseDropdown();
             populateMuscleFilter();
             setTodayDate();
             await loadCustomExercises();
             await loadData();
+            await loadGoals();
             renderProgress();
             renderTodaysWorkouts();
             renderExercisesList();
+            renderGoals();
         }
+
+        async function loadGoals() {
+            if (!db) return;
+            
+            try {
+                const snapshot = await db.collection('goals').get();
+                goalsData = [];
+                snapshot.forEach(doc => {
+                    goalsData.push({ id: doc.id, ...doc.data() });
+                });
+                console.log(`Loaded ${goalsData.length} goals`);
+            } catch (error) {
+                console.error('Error loading goals:', error);
+            }
+        }
+
+        async function saveGoal(goal) {
+            if (!db) {
+                alert('Database connection error.');
+                return false;
+            }
+            
+            try {
+                await db.collection('goals').add(goal);
+                return true;
+            } catch (error) {
+                console.error('Error saving goal:', error);
+                alert('Error saving goal. Please try again.');
+                return false;
+            }
+        }
+
+        async function deleteGoal(id) {
+            if (!db) {
+                alert('Database connection error.');
+                return false;
+            }
+            
+            try {
+                await db.collection('goals').doc(id).delete();
+                return true;
+            } catch (error) {
+                console.error('Error deleting goal:', error);
+                return false;
+            }
+        }
+
+        function populateGoalExerciseDropdown() {
+            const select = document.getElementById('goal-exercise-select');
+            select.innerHTML = '<option value="">Select an exercise...</option>';
+            exercises.forEach((ex, idx) => {
+                const option = document.createElement('option');
+                option.value = idx;
+                option.textContent = `${ex.name} (${ex.equipment})`;
+                select.appendChild(option);
+            });
+        }
+
+        // Show current stats when exercise selected for goal
+        document.getElementById('goal-exercise-select').addEventListener('change', function() {
+            const infoDiv = document.getElementById('goal-current-info');
+            
+            if (this.value !== '') {
+                const exercise = exercises[this.value];
+                
+                // Find last workout for this exercise
+                const exerciseHistory = workoutData.filter(d => 
+                    d.exercise === exercise.name && d.equipment === exercise.equipment
+                ).sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                if (exerciseHistory.length > 0) {
+                    const last = exerciseHistory[0];
+                    infoDiv.innerHTML = `📊 Current: <strong>${last.weight} lbs × ${last.reps} reps</strong> (${formatDate(last.date)})`;
+                    infoDiv.style.display = 'block';
+                } else {
+                    infoDiv.innerHTML = '⚠️ No workout history found. Add a workout first to set a goal.';
+                    infoDiv.style.display = 'block';
+                }
+            } else {
+                infoDiv.style.display = 'none';
+            }
+        });
 
         async function loadCustomExercises() {
             if (!db) return;
@@ -991,6 +1176,207 @@
 
         // Exercise list search
         document.getElementById('exercise-list-search').addEventListener('input', renderExercisesList);
+
+        // Goal form submission
+        document.getElementById('goal-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const exerciseIdx = document.getElementById('goal-exercise-select').value;
+            const targetWeight = parseFloat(document.getElementById('goal-target-weight').value);
+            
+            const exercise = exercises[exerciseIdx];
+            
+            // Get last workout for this exercise
+            const exerciseHistory = workoutData.filter(d => 
+                d.exercise === exercise.name && d.equipment === exercise.equipment
+            ).sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            if (exerciseHistory.length === 0) {
+                alert('Please log at least one workout for this exercise before setting a goal.');
+                return;
+            }
+            
+            const lastWorkout = exerciseHistory[0];
+            const startWeight = lastWorkout.weight;
+            const startReps = lastWorkout.reps;
+            
+            // Validate target is higher than current
+            if (targetWeight <= startWeight) {
+                alert('Target weight must be higher than your current weight.');
+                return;
+            }
+            
+            // Auto-calculate weeks based on weight increase
+            // Rule: 5 lbs per week for compounds, 2.5 lbs per week for accessories
+            const weightIncrease = targetWeight - startWeight;
+            const isCompound = ['Squat', 'Deadlift', 'Bench Press', 'Overhead Press'].some(
+                ex => exercise.name.includes(ex)
+            );
+            const weeklyIncrease = isCompound ? 5 : 2.5;
+            const weeks = Math.ceil(weightIncrease / weeklyIncrease);
+            
+            // Calculate progression using double progression strategy
+            const progression = calculateSmartProgression(startWeight, targetWeight, startReps, weeks);
+            
+            const goal = {
+                muscle: exercise.muscle,
+                exercise: exercise.name,
+                equipment: exercise.equipment,
+                startWeight: startWeight,
+                targetWeight: targetWeight,
+                startReps: startReps,
+                weeks: weeks,
+                progression: progression,
+                createdAt: firebase.firestore.Timestamp.now()
+            };
+            
+            const saved = await saveGoal(goal);
+            if (saved) {
+                await loadGoals();
+                renderGoals();
+                this.reset();
+                document.getElementById('goal-current-info').style.display = 'none';
+                alert(`Goal created! ${weeks} week progression plan generated.`);
+            }
+        });
+
+        function calculateSmartProgression(startWeight, targetWeight, startReps, weeks) {
+            const progression = [];
+            const totalIncrease = targetWeight - startWeight;
+            
+            // Double progression: work reps up from starting reps to +4, then add weight
+            const increments = Math.ceil(totalIncrease / 5); // 5 lb jumps
+            const weeksPerIncrement = Math.max(2, Math.floor(weeks / increments));
+            
+            let currentWeight = startWeight;
+            let weekCounter = 0;
+            
+            for (let increment = 0; increment < increments && weekCounter < weeks; increment++) {
+                // For each weight, do 2+ weeks of rep progression
+                for (let repWeek = 0; repWeek < weeksPerIncrement && weekCounter < weeks; repWeek++) {
+                    const reps = Math.min(startReps + repWeek, startReps + 4);
+                    
+                    progression.push({
+                        week: weekCounter + 1,
+                        weight: Math.round(currentWeight * 2) / 2,
+                        reps: reps
+                    });
+                    
+                    weekCounter++;
+                }
+                
+                // Add weight for next cycle
+                currentWeight = Math.min(currentWeight + 5, targetWeight);
+            }
+            
+            // Fill remaining weeks if needed
+            while (weekCounter < weeks) {
+                progression.push({
+                    week: weekCounter + 1,
+                    weight: targetWeight,
+                    reps: startReps
+                });
+                weekCounter++;
+            }
+            
+            return progression;
+        }
+
+        function renderGoals() {
+            const container = document.getElementById('goals-list-container');
+            
+            if (goalsData.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            
+            goalsData.forEach(goal => {
+                const totalIncrease = goal.targetWeight - goal.startWeight;
+                const weeklyAvg = (totalIncrease / goal.weeks).toFixed(1);
+                
+                // Determine exercise type for display
+                const isCompound = ['Squat', 'Deadlift', 'Bench Press', 'Overhead Press'].some(
+                    ex => goal.exercise.includes(ex)
+                );
+                const exerciseType = isCompound ? 'Compound' : 'Accessory';
+                
+                // Find current week based on actual workouts
+                let currentWeek = 0;
+                const goalWorkouts = workoutData.filter(w => 
+                    w.exercise === goal.exercise && w.equipment === goal.equipment
+                );
+                if (goalWorkouts.length > 0) {
+                    const startDate = goal.createdAt.toDate();
+                    const latestWorkout = new Date(goalWorkouts[goalWorkouts.length - 1].date);
+                    const daysDiff = Math.floor((latestWorkout - startDate) / (1000 * 60 * 60 * 24));
+                    currentWeek = Math.floor(daysDiff / 7);
+                }
+                
+                html += `
+                    <div class="goal-card">
+                        <div class="goal-header">
+                            <div>
+                                <div class="goal-title">${goal.exercise} (${goal.equipment})</div>
+                                <span class="equipment-tag" style="margin-top: 5px;">${exerciseType}</span>
+                            </div>
+                            <button class="delete-exercise-btn" onclick="removeGoal('${goal.id}')">Delete</button>
+                        </div>
+                        
+                        <div class="goal-summary">
+                            <div class="goal-stat"><strong>Current:</strong> ${goal.startWeight} lbs × ${goal.startReps} reps</div>
+                            <div class="goal-stat"><strong>Target:</strong> ${goal.targetWeight} lbs</div>
+                            <div class="goal-stat"><strong>Timeline:</strong> ${goal.weeks} weeks</div>
+                            <div class="goal-stat"><strong>Weekly +:</strong> ${weeklyAvg} lbs/week</div>
+                            <div style="margin-top: 8px; font-style: italic; color: #667eea;">
+                                📈 Double Progression: Increase reps, then add weight
+                            </div>
+                        </div>
+                        
+                        <div class="progression-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Week</th>
+                                        <th>Weight</th>
+                                        <th>Reps</th>
+                                        <th>Total Volume</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${goal.progression.map(p => {
+                                        const volume = (p.weight * p.reps).toFixed(0);
+                                        const isComplete = p.week <= currentWeek;
+                                        return `
+                                            <tr class="${isComplete ? 'week-complete' : ''}">
+                                                <td>Week ${p.week}</td>
+                                                <td>${p.weight} lbs</td>
+                                                <td>${p.reps}</td>
+                                                <td>${volume} lbs</td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        async function removeGoal(id) {
+            if (!confirm('Delete this goal progression?')) return;
+            
+            const deleted = await deleteGoal(id);
+            if (deleted) {
+                await loadGoals();
+                renderGoals();
+                alert('Goal deleted successfully!');
+            }
+        }
 
         function populateMuscleFilter() {
             const select = document.getElementById('muscle-filter');
